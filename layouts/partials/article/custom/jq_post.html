@@ -1,0 +1,422 @@
+<script src="https://unpkg.com/alpinejs" defer></script>
+<script src="https://biowasm.com/cdn/v3/aioli.js"></script>
+
+<style>
+
+textarea {
+  font-family: monospace !important;
+  overflow-x: auto;
+  display: block;
+  background-color: var(--pre-background-color);
+  color: var(--pre-text-color);
+  line-height: 1.42857;
+  word-break: break-all;
+  padding: var(--card-padding);
+  margin-left: calc((var(--card-padding)) * -1);
+  margin-right: calc((var(--card-padding)) * -1);
+  width: calc(100% + var(--card-padding) * 2);
+  border: 0px;
+}
+
+button {
+  background: var(--accent-color);
+  box-shadow: var(--shadow-l2);
+  border-radius: var(--tag-border-radius);
+  padding: 8px 20px;
+  color: var(--accent-color-text);
+  font-size: 1.4rem;
+  transition: all .3s ease;
+  border: 0;
+  cursor: pointer;
+}
+
+button:hover {
+    background: var(--accent-color-darker);
+}
+
+</style>
+    <script>
+        class JqView extends HTMLElement {
+            constructor() {
+                super();
+                this.name = '';
+            }
+
+            connectedCallback() {
+                if(this.hasAttribute('name')) this.name = this.getAttribute('name');
+                // if(this.hasAttribute('age')) this.age = this.getAttribute('age');
+                this.render();
+            }
+            render() {
+                this.innerHTML = `
+    <div x-data='${this.name}'>
+        <h4 for="data-json">JSON Data</h4> 
+        <textarea name="data-json" id="data-json" cols="30"  x-model="json" style="font-family: monospace !important;"></textarea>
+        
+        <h4 for="jq-program">JQ Program</h4> 
+        <textarea name="jq-program" id="jq-program" cols="30"  x-model="program" style="font-family: monospace !important;"></textarea>
+        <br>
+        <button @click="$dispatch('jqEval', {json: json, flags: flags, program:program, target:'${this.name}-output' })">Run</button>
+        
+        <h4 for="output">Output</h4>
+        <pre id="${this.name}-output" x-text="output"></pre>
+
+        <label for="" x-text="output"></label>
+
+        <input type="hidden" name="example1temp" id="example1temp">
+
+        <details>
+            <summary>CLI command</summary>
+            <p>
+                <pre id="cli" x-text="cli()"></pre>
+                <button x-on:click="navigator.clipboard.writeText(cli())">
+                    Copy to Clipboard
+                </button>
+            </p>
+        </details>
+    </div>`;
+            }
+        }
+
+        if(!customElements.get('jq-view')) customElements.define('jq-view', JqView);
+
+        document.addEventListener('alpine:init', () => {
+            console.log("alpine:init");
+Alpine.data('example1', () => ({
+    json: '{"name": "Alice", "age": 30}',
+    program: `.name`,
+    flags: "-rM",
+    output: "",
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example2', () => ({
+    json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]',
+    program: '.[] | select(.age > 28)',
+    flags: "-rM",
+    output: "",
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+Alpine.data('example3', () => ({
+    json: '[1, 2, 3, 4, 5]',
+    program: 'map(. * 2)',
+    flags: "-rM",
+    output: "",
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example4', () => ({
+    json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]',
+    program: '.[] | select(.age > 28) | .name',
+    flags: "-rM",
+    output: "",
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example5', () => ({
+    json: '{"name": "Alice", "age": 30}',
+    program: '{name: .name, age: (.age + 5)}',
+    flags: "-rM",
+    output: "",
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example6', () => ({
+    json: '{"name": "Alice", "age": 30}',
+    program: 'if .age > 18 then "Adult" else "Child" end',
+    flags: "-rM",
+    output: "",
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example7', () => ({
+    json: '[3, 1, 4, 2, 5]',
+    program: 'sort',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example8', () => ({
+    json: '{"data": {"value": 42, "nested": {"value": 24}}}',
+    program: '.. | .value?',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example9', () => ({
+    json: '{"name": "Alice Smith"}',
+    program: '.name | split(" ") | .[0]',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example10', () => ({
+    json: '{"name": "Alice", "age": 30}',
+    program: '"Name: \\(.name), Age: \\(.age)"',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} ${this.program}`
+    },
+}));
+
+Alpine.data('example11', () => ({
+    json: '[{"category": "A", "value": 10}, {"category": "B", "value": 20}, {"category": "A", "value": 5}]',
+    program: 'group_by(.category) | map({category: .[0].category, sum: map(.value) | add})',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example12', () => ({
+    json: '[1, 2, 2, 3, 4, 4, 5]',
+    program: 'unique',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example13', () => ({
+    json: '{"data": [{"values": [1, 2, 3]}, {"values": [4, 5, 6]}]}',
+    program: '.data[].values[] | select(. > 3)',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example14', () => ({
+    json: '{"items": [{"name": "Apple", "price": 1}, {"name": "Banana", "price": 0.5}]}',
+    program: '.items | map({(.name): (.price * 2)}) | add',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example15', () => ({
+    json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}, {"name": "John", "age": 35}]',
+    program: 'map(select(.age > 28 and (.name | test("a", "i"))))',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example16', () => ({
+    json: '{"timestamp": 1630768200}',
+    program: '.timestamp | strftime("%Y-%m-%d %H:%M:%S")',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example17', () => ({
+    json: '[1, null, 3, null, 5]',
+    program: 'map(select(. != null))',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example18', () => ({
+    json: '{"data": {"value": 42, "nested": {"value": 24}}}',
+    program: 'recurse | .value? | select(. != null) | { value: (. * 5) } | add',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example19', () => ({
+    json: '{"a": 1, "b": 2, "c": 3}',
+    program: 'to_entries[] | "\\(.key) is \\(.value)"',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example20', () => ({
+    json: '[{"score": 90}, {"score": 85}, {"score": 95}]',
+    program: 'map(.score) | add / length',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example21', () => ({
+    json: '{"person": {"name": {"first": "Alice", "last": "Smith"}, "age": 30}}',
+    program: 'paths as $p | select(getpath($p) | type != "object") | ($p | join(".")) + " = " + (getpath($p) | tostring)',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example22', () => ({
+    json: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]',
+    program: 'group_by(. / 5 | floor * 5) | map({ bin: .[0], count: length })',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} ${this.program}`
+    },
+}));
+
+Alpine.data('example23', () => ({
+    json: '[{"value": 10}, {"value": 20}, {"value": 30}]',
+    program: 'reduce .[] as $item (0; . + $item.value)',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example24', () => ({
+    json: '{"data": {"values": [1, 2, 3], "nested": {"values": [4, 5, 6]}}}',
+    program: 'walk(if type == "number" then . * 2 else . end)',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+Alpine.data('example25', () => ({
+    json: '[{"category": "A", "value": 10}, {"category": "B", "value": 20}, {"category": "A", "value": 5}]',
+    program: 'group_by(.category) | map({category: .[0].category, sum: (map(.value) | add)}) | .[] | select(.sum > 17)',
+    flags: '-rM',
+    output: '',
+
+    cli() {
+        return `echo '${this.json}' | 
+jq ${this.flags} '${this.program}'`
+    },
+}));
+
+});
+</script>
+
+<script type="module">
+const CLI = await new Aioli(["jq/1.6"]);
+function generateRandomString(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+    }
+
+    return result;
+}
+
+window.addEventListener("jqEval", async function (e) {
+    console.log("evaluating")
+    console.log(e);
+    const filename = generateRandomString(5) + ".json";
+    console.log("mounting to " + filename)
+    
+    await CLI.mount({
+        name: filename,
+        data: e.detail.json,
+    });
+
+    console.log("mounted")
+
+    const params = e.detail.flags == "" ? [e.detail.program, filename] : [e.detail.flags, e.detail.program, filename]
+    console.log(params)
+    const output = await CLI.exec("jq", params);
+
+    console.log(output);
+    document.getElementById(e.detail.target).innerHTML = output;
+
+});
+</script>
