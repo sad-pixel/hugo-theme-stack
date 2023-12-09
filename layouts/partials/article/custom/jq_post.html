@@ -56,7 +56,8 @@ button:hover {
         <h4 for="jq-program">JQ Program</h4> 
         <textarea name="jq-program" id="jq-program" cols="30"  x-model="program" style="font-family: monospace !important;"></textarea>
         <br>
-        <button @click="$dispatch('jqEval', {json: json, flags: flags, program:program, target:'${this.name}-output' })">Run</button>
+        <button @click="$dispatch('jqEval', {json: json, flags: flags, program:program, target:'${this.name}-output' })">Run</button> 
+        <button @click="json = og_json; program = og_program; document.getElementById('${this.name}-output').innerHTML = '';">Reset</button>
         
         <h4 for="output">Output</h4>
         <pre id="${this.name}-output" x-text="output"></pre>
@@ -84,7 +85,9 @@ button:hover {
             console.log("alpine:init");
 Alpine.data('example1', () => ({
     json: '{"name": "Alice", "age": 30}',
+    og_json: '{"name": "Alice", "age": 30}',
     program: `.name`,
+    og_program: `.name`,
     flags: "-rM",
     output: "",
 
@@ -96,7 +99,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example2', () => ({
     json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]',
+    og_json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]',
     program: '.[] | select(.age > 28)',
+    og_program: '.[] | select(.age > 28)',
     flags: "-rM",
     output: "",
 
@@ -107,7 +112,9 @@ jq ${this.flags} '${this.program}'`
 }));
 Alpine.data('example3', () => ({
     json: '[1, 2, 3, 4, 5]',
+    og_json: '[1, 2, 3, 4, 5]',
     program: 'map(. * 2)',
+    og_program: 'map(. * 2)',
     flags: "-rM",
     output: "",
 
@@ -119,7 +126,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example4', () => ({
     json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]',
+    og_json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]',
     program: '.[] | select(.age > 28) | .name',
+    og_program: '.[] | select(.age > 28) | .name',
     flags: "-rM",
     output: "",
 
@@ -131,7 +140,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example5', () => ({
     json: '{"name": "Alice", "age": 30}',
+    og_json: '{"name": "Alice", "age": 30}',
     program: '{name: .name, age: (.age + 5)}',
+    og_program: '{name: .name, age: (.age + 5)}',
     flags: "-rM",
     output: "",
 
@@ -143,7 +154,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example6', () => ({
     json: '{"name": "Alice", "age": 30}',
+    og_json: '{"name": "Alice", "age": 30}',
     program: 'if .age > 18 then "Adult" else "Child" end',
+    og_program: 'if .age > 18 then "Adult" else "Child" end',
     flags: "-rM",
     output: "",
 
@@ -155,7 +168,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example7', () => ({
     json: '[3, 1, 4, 2, 5]',
+    og_json: '[3, 1, 4, 2, 5]',
     program: 'sort',
+    og_program: 'sort',
     flags: '-rM',
     output: '',
 
@@ -167,7 +182,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example8', () => ({
     json: '{"data": {"value": 42, "nested": {"value": 24}}}',
+    og_json: '{"data": {"value": 42, "nested": {"value": 24}}}',
     program: '.. | .value?',
+    og_program: '.. | .value?',
     flags: '-rM',
     output: '',
 
@@ -179,7 +196,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example9', () => ({
     json: '{"name": "Alice Smith"}',
+    og_json: '{"name": "Alice Smith"}',
     program: '.name | split(" ") | .[0]',
+    og_program: '.name | split(" ") | .[0]',
     flags: '-rM',
     output: '',
 
@@ -191,7 +210,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example10', () => ({
     json: '{"name": "Alice", "age": 30}',
+    og_json: '{"name": "Alice", "age": 30}',
     program: '"Name: \\(.name), Age: \\(.age)"',
+    og_program: '"Name: \\(.name), Age: \\(.age)"',
     flags: '-rM',
     output: '',
 
@@ -203,7 +224,9 @@ jq ${this.flags} ${this.program}`
 
 Alpine.data('example11', () => ({
     json: '[{"category": "A", "value": 10}, {"category": "B", "value": 20}, {"category": "A", "value": 5}]',
+    og_json: '[{"category": "A", "value": 10}, {"category": "B", "value": 20}, {"category": "A", "value": 5}]',
     program: 'group_by(.category) | map({category: .[0].category, sum: map(.value) | add})',
+    og_program: 'group_by(.category) | map({category: .[0].category, sum: map(.value) | add})',
     flags: '-rM',
     output: '',
 
@@ -215,7 +238,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example12', () => ({
     json: '[1, 2, 2, 3, 4, 4, 5]',
+    og_json: '[1, 2, 2, 3, 4, 4, 5]',
     program: 'unique',
+    og_program: 'unique',
     flags: '-rM',
     output: '',
 
@@ -227,7 +252,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example13', () => ({
     json: '{"data": [{"values": [1, 2, 3]}, {"values": [4, 5, 6]}]}',
+    og_json: '{"data": [{"values": [1, 2, 3]}, {"values": [4, 5, 6]}]}',
     program: '.data[].values[] | select(. > 3)',
+    og_program: '.data[].values[] | select(. > 3)',
     flags: '-rM',
     output: '',
 
@@ -239,7 +266,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example14', () => ({
     json: '{"items": [{"name": "Apple", "price": 1}, {"name": "Banana", "price": 0.5}]}',
+    og_json: '{"items": [{"name": "Apple", "price": 1}, {"name": "Banana", "price": 0.5}]}',
     program: '.items | map({(.name): (.price * 2)}) | add',
+    og_program: '.items | map({(.name): (.price * 2)}) | add',
     flags: '-rM',
     output: '',
 
@@ -251,7 +280,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example15', () => ({
     json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}, {"name": "John", "age": 35}]',
+    og_json: '[{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}, {"name": "John", "age": 35}]',
     program: 'map(select(.age > 28 and (.name | test("a", "i"))))',
+    og_program: 'map(select(.age > 28 and (.name | test("a", "i"))))',
     flags: '-rM',
     output: '',
 
@@ -263,7 +294,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example16', () => ({
     json: '{"timestamp": 1630768200}',
+    og_json: '{"timestamp": 1630768200}',
     program: '.timestamp | strftime("%Y-%m-%d %H:%M:%S")',
+    og_program: '.timestamp | strftime("%Y-%m-%d %H:%M:%S")',
     flags: '-rM',
     output: '',
 
@@ -275,7 +308,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example17', () => ({
     json: '[1, null, 3, null, 5]',
+    og_json: '[1, null, 3, null, 5]',
     program: 'map(select(. != null))',
+    og_program: 'map(select(. != null))',
     flags: '-rM',
     output: '',
 
@@ -287,7 +322,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example18', () => ({
     json: '{"data": {"value": 42, "nested": {"value": 24}}}',
+    og_json: '{"data": {"value": 42, "nested": {"value": 24}}}',
     program: 'recurse | .value? | select(. != null) | { value: (. * 5) } | add',
+    og_program: 'recurse | .value? | select(. != null) | { value: (. * 5) } | add',
     flags: '-rM',
     output: '',
 
@@ -299,7 +336,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example19', () => ({
     json: '{"a": 1, "b": 2, "c": 3}',
+    og_json: '{"a": 1, "b": 2, "c": 3}',
     program: 'to_entries[] | "\\(.key) is \\(.value)"',
+    og_program: 'to_entries[] | "\\(.key) is \\(.value)"',
     flags: '-rM',
     output: '',
 
@@ -311,7 +350,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example20', () => ({
     json: '[{"score": 90}, {"score": 85}, {"score": 95}]',
+    og_json: '[{"score": 90}, {"score": 85}, {"score": 95}]',
     program: 'map(.score) | add / length',
+    og_program: 'map(.score) | add / length',
     flags: '-rM',
     output: '',
 
@@ -323,7 +364,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example21', () => ({
     json: '{"person": {"name": {"first": "Alice", "last": "Smith"}, "age": 30}}',
+    og_json: '{"person": {"name": {"first": "Alice", "last": "Smith"}, "age": 30}}',
     program: 'paths as $p | select(getpath($p) | type != "object") | ($p | join(".")) + " = " + (getpath($p) | tostring)',
+    og_program: 'paths as $p | select(getpath($p) | type != "object") | ($p | join(".")) + " = " + (getpath($p) | tostring)',
     flags: '-rM',
     output: '',
 
@@ -335,7 +378,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example22', () => ({
     json: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]',
+    og_json: '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]',
     program: 'group_by(. / 5 | floor * 5) | map({ bin: .[0], count: length })',
+    og_program: 'group_by(. / 5 | floor * 5) | map({ bin: .[0], count: length })',
     flags: '-rM',
     output: '',
 
@@ -347,7 +392,9 @@ jq ${this.flags} ${this.program}`
 
 Alpine.data('example23', () => ({
     json: '[{"value": 10}, {"value": 20}, {"value": 30}]',
+    og_json: '[{"value": 10}, {"value": 20}, {"value": 30}]',
     program: 'reduce .[] as $item (0; . + $item.value)',
+    og_program: 'reduce .[] as $item (0; . + $item.value)',
     flags: '-rM',
     output: '',
 
@@ -359,7 +406,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example24', () => ({
     json: '{"data": {"values": [1, 2, 3], "nested": {"values": [4, 5, 6]}}}',
+    og_json: '{"data": {"values": [1, 2, 3], "nested": {"values": [4, 5, 6]}}}',
     program: 'walk(if type == "number" then . * 2 else . end)',
+    og_program: 'walk(if type == "number" then . * 2 else . end)',
     flags: '-rM',
     output: '',
 
@@ -371,7 +420,9 @@ jq ${this.flags} '${this.program}'`
 
 Alpine.data('example25', () => ({
     json: '[{"category": "A", "value": 10}, {"category": "B", "value": 20}, {"category": "A", "value": 5}]',
+    og_json: '[{"category": "A", "value": 10}, {"category": "B", "value": 20}, {"category": "A", "value": 5}]',
     program: 'group_by(.category) | map({category: .[0].category, sum: (map(.value) | add)}) | .[] | select(.sum > 17)',
+    og_program: 'group_by(.category) | map({category: .[0].category, sum: (map(.value) | add)}) | .[] | select(.sum > 17)',
     flags: '-rM',
     output: '',
 
