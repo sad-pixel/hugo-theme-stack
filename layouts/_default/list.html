@@ -13,8 +13,11 @@
                 <h3 class="section-count">{{ T "list.page" (len .Pages) }}</h3>
                 <h1 class="section-term">{{ .Title }}</h1>
                 {{ with .Params.description }}
-                    <h2 class="section-description">{{ . }}</h2>
+                    <h2 class="section-description">{{ . | markdownify }}</h2>
                 {{ end }}
+                <div class="section-description">
+                    {{ .Content | markdownify }}
+                </div>
             </div>
     
             {{- $image := partialCached "helper/image" (dict "Context" . "Type" "section") .RelPermalink "section" -}}
